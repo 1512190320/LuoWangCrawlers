@@ -16,7 +16,7 @@ def SaveData(data):
 
 
 def SavePic(pic, name):
-    SavePath = 'pic/'+ name +'.jpg'
+    SavePath = 'pic/' + name + '.jpg'
     p_obj = open(SavePath, 'wb')
     p_obj.write(pic.content)
     p_obj.close()
@@ -33,22 +33,28 @@ value = {}
 value['p'] = 1
 string = ''
 
+try:
+    for x in range(1, 10):
+        print(value['p'])
+        # url_value = parse.urlencode(data)
+        # full_url = url + url_value
+        # result = request.urlopen(full_url).read()
+        # result = result.decode('UTF-8')
+        result = requests.get(url, params=value, headers=headers)
+        soup = BeautifulSoup(result.content, 'html.parser')
+        print(soup.title)
+        for link in soup.find_all('a', class_="name"):
+            print(link.get_text())
+            string = string + link.get_text() + '\n'
+            # SaveData(link.get_text())
+        for picNode in soup.find_all('img', class_="cover rounded"):
+            pic = requests.get(picNode.get('src'), headers=headers)
+            SavePic(pic, picNode.get('alt'))
+        SaveData(string)
+        value['p'] += 1
 
-for x in range(1, 10):
-    # url_value = parse.urlencode(data)
-    # full_url = url + url_value
-    # result = request.urlopen(full_url).read()
-    # result = result.decode('UTF-8')
-    result = requests.get(url, params=value,headers=headers)
-    soup = BeautifulSoup(result.content, 'html.parser')
-    print(soup.title)
-    for link in soup.find_all('a', class_="name"):
-        print(link.get_text())
-        string = string + link.get_text() + '\n'
-        # SaveData(link.get_text())
-    for picNode in soup.find_all('img', class_="cover rounded"):
-        pic = requests.get(picNode.get('src'),headers=headers)
-        SavePic(pic, picNode.get('alt'))
-    SaveData(string)
-    value['p'] += 1
-    print(value['p'])
+except Exception as e:
+    print('Error: ', e)
+
+finally:
+    pass
