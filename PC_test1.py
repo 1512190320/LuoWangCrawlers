@@ -42,6 +42,8 @@ try:
         # result = result.decode('UTF-8')
         result = requests.get(url, params=value, headers=headers)
         soup = BeautifulSoup(result.content, 'html.parser')
+        if soup.find_all('div', class_='error-msg'):
+            raise Exception('404 Error')
         print(soup.title)
         for link in soup.find_all('a', class_="name"):
             print(link.get_text())
